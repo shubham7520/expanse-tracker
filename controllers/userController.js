@@ -5,16 +5,16 @@ const Register = async (req, res, next) => {
     if (!req.body.name || !req.body.email || !req.body.password) {
         return res.status(400).json({
             success: false,
-            message: "Please fill the required feild."
+            message: "All input is required."
         })
     }
 
     const userExiest = await User.findOne({ email: req.body.email });
 
     if (userExiest) {
-        return res.status(400).json({
+        return res.status(409).json({
             success: false,
-            message: "This email already exiest, Please use another email"
+            message: "User Already Exist. Please Login"
         })
     }
 
@@ -22,7 +22,7 @@ const Register = async (req, res, next) => {
 
     const Token = await user.getJWTToken();
 
-    res.status(200).json({
+    res.status(201).json({
         success: true,
         user,
         Token,

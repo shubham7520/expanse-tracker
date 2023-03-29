@@ -2,16 +2,22 @@ import Expanse from "../models/expanseModel.js";
 
 const createExpanse = async (req, res, next) => {
 
-    if (!req.body.description || !req.body.amount) {
+    const { description, amount } = req.body
+
+    if (!description || !amount) {
         return res.status(400).json({
             success: false,
             message: "Please Enter Description & Amount"
         })
     }
 
-    const expanse = await Expanse.create(req.body);
+    const expanse = await Expanse.create({
+        description,
+        amount,
+        user: req.user.id
+    });
 
-    return res.status(200).json({
+    return res.status(202).json({
         success: false,
         message: "Expanse Successfully Added",
         expanse
@@ -19,9 +25,9 @@ const createExpanse = async (req, res, next) => {
 }
 
 const getExpanse = async (req, res, next) => {
-    const expanse = await Expanse.find();
+    const expanse = await Expanse.find({ user: req.user.id });
 
-    res.status(202).json({
+    res.status(200).json({
         success: true,
         expanse
     })
@@ -37,4 +43,15 @@ const deleteExpanse = async (req, res, next) => {
     })
 }
 
-export { createExpanse, getExpanse, deleteExpanse }
+const updateExpanse = async (req, res, next) => {
+    const expanse = await Expanse.findByIdAndUpdate(req.params.id, req.body, { new: true });
+
+    res.status(200).json({
+        success: true,
+        message: "Update Successfully",
+        expanse
+    })
+
+}
+
+export { createExpanse, getExpanse, deleteExpanse, updateExpanse }
