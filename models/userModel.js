@@ -17,7 +17,8 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        require: true
+        require: true,
+        select: false
     }
 });
 
@@ -32,6 +33,9 @@ userSchema.methods.getJWTToken = function () {
     return Jwt.sign({ id: this._id }, process.env.SECRET_KEY, { expiresIn: process.env.EXPIRE_TIME });
 }
 
+userSchema.methods.comparePassword = async function (enterPassword) {
+    return bcrypt.compare(enterPassword, this.password);
+}
 
 const user = mongoose.model('user', userSchema);
 
